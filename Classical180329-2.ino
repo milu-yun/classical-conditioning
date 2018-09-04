@@ -31,7 +31,7 @@ unsigned long outcomeIdentity[4] = {1, 1, 1, 1}; // 1: reward, 2: punishment
 // {0, 20000, 30000, 40000, 47000, 52000, 57000, 60000, 65000, 70000, 75000};// 0ul...10ul
 unsigned long rewardAmount[11] = {0, 10000, 20000, 30000, 35000, 40000, 47000, 52000, 57000, 60000, 65000}; // 0ul...10ul
 unsigned long rewardDuration = 42000;
-unsigned long punishDuration = 100000;
+unsigned long punishDuration = 10000;
 unsigned long lDuration = 100;
 
 int state = 9;
@@ -304,6 +304,9 @@ void loop() {
                 if (reversal!=0){
                    printf("%luf%d\n",times,reversalTimes);
                  }
+                digitalWrite(11,High)
+                delay(100)
+                digitalWrite(11,low)
                 state = 5;
             }
         }
@@ -336,6 +339,7 @@ void loop() {
             // state 0: baseline -> 1: cue (0.5 s)
             if (state==0) {
                 PORTD &= B01111111; // turn off pin 7 (final odor output valve)
+                digitalWrite(11,High); // cue on set
                 
                 state = 1; // state conversion 0 to 1
                 printf("%luc%d\n",times,cue);
@@ -344,6 +348,7 @@ void loop() {
             // state 1: cue -> state 2: delay
             else if (state==1) {
                 PORTD &= B00000011; // turn off all odor valves
+                digitalWrite(11,low); // cue off set
 
                 state = 2;
                 printf("%lud1\n",times);
@@ -369,7 +374,9 @@ void loop() {
                     bitSet(PORTB,noRewardPin); // notify if no reward is given
                     printf("%lur0\n",times);
                 }
-                
+                digitalWrite(11,High); // outcome onset
+                delay(100);
+                digitalWrite(11,low);// outcome offset
                 state = 3;
             }
           
