@@ -6,7 +6,7 @@ handles = guidata(hFigure);
 
 if isempty(state); state = 9; end
 if state==9
-    iTrial=1; jTrial=0; aboveThreshold=0; jReversal=0; nCue = zeros(1,4);probList = zeros(1,4);
+    iTrial=1; jTrial=0; aboveThreshold=false; jReversal=0; nCue = zeros(1,4);probList = zeros(1,4);
     cueN = 2; initialIdentity = NaN; cueType = zeros(1,4); nOmit = zeros(1,4);thresholdReversal = NaN;
     reversalTimes = 0; nTrial = 200;
 end
@@ -115,10 +115,10 @@ try
                         %threshold_mod2 = round(nTrial./(1+reversalTimes));
                         if reversal ~=0
                             if isnan(thresholdReversal)
-                                threshold1=randi([130 150],1); threshold2 = round(nTrial./(1+reversalTimes));
+                                threshold1=randi([140 160],1); threshold2 = round(nTrial./(1+reversalTimes));
                                 thresholdReversal = [threshold1 threshold2]; 
                             end
-                            reversalCase = ((reversal ==1) && (jTrial >= thresholdReversal(1))) && aboveThreshold || ((reversal ==2) && (jTrial>=thresholdReversal(2)));
+                            reversalCase = ((reversal ==1) && (jTrial >= thresholdReversal(1)) && aboveThreshold) || ((reversal ==2) && (jTrial>=thresholdReversal(2)));
                             if reversalCase
                                 usedProb = probList(cueType);
                                 [maxProb, maxIndex] = max(usedProb);
@@ -131,9 +131,9 @@ try
                                 jReversal = jReversal+1;
                                 thresholdReversal = nan;
                                 set(handles.jReversal,'string',num2str(jReversal))
-                            elseif reversal ==2
+                            elseif reversal ==2 || ((reverseal ==1)&& jReversal ==0) 
                                 jTrial = jTrial+1;
-                                set(handles.jTrial,'string', num2str(jTrial))
+                                set(handles.jTrial,'string', num2str(thresholdReversal(1)-jTrial))
                             end
                         end
                         
@@ -222,9 +222,7 @@ try
                             if pttest <= 0.01 && iTrial>=100 && dtI
                                 set(handles.pANOVA,'BackgroundColor','y');
                                 aboveThreshold = true;
-                                if reversal ==1
-                                    jTrial = jTrial+1;
-                                end
+
                             else
                                 set(handles.pANOVA,'BackgroundColor','w');
                             end
