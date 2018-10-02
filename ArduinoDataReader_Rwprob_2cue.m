@@ -214,6 +214,7 @@ try
                         set(handles.aBar,'TickDir','out','FontSize',8, ...
                             'XLim',[0.5 4+0.5],'XTick',1:4,'XTickLabel',{'A','B','C','D'}, ...
                             'YLim',[0 yRange],'YTick',[0 yRange]);
+                            anovaTemp = 0;
                         try
                             % ttest
                             [httest,pttest] = ttest2(lickNum(cueData==(cueType(1)-1)),lickNum(cueData==cueType(2)-1));
@@ -223,13 +224,15 @@ try
                             set(handles.pANOVA,'String',num2str(pttest,'%.3f'));
                             if pttest <= 0.05 && iTrial>=20 && dtI
                                 set(handles.pANOVA,'BackgroundColor','y');
+                                anovaTemp = 1;
                             else
                                 set(handles.pANOVA,'BackgroundColor','w');
                             end
-                            aboveThreshold = [aboveThreshold httest.*dtI];
+                            
                             set(handles.jTrial,'string', num2str(jTrial))
                         catch
                         end
+                        aboveThreshold = [aboveThreshold anovaTemp];
                         hold(handles.aBar,'off');
                         
                     case 'l'
