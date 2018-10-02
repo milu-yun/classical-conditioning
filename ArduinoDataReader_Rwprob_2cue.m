@@ -6,7 +6,7 @@ handles = guidata(hFigure);
 
 if isempty(state); state = 9; end
 if state==9
-    iTrial=1; jTrial=0; aboveThreshold=false; jReversal=0; nCue = zeros(1,4);probList = zeros(1,4);
+    iTrial=1; jTrial=0; aboveThreshold=[]; jReversal=0; nCue = zeros(1,4);probList = zeros(1,4);
     cueN = 2; initialIdentity = NaN; cueType = zeros(1,4); nOmit = zeros(1,4);thresholdReversal = NaN;
     reversalTimes = 0; nTrial = 200;
 end
@@ -118,7 +118,10 @@ try
                                 threshold1=randi([140 160],1); threshold2 = round(nTrial./(1+reversalTimes));
                                 thresholdReversal = [threshold1 threshold2]; 
                             end
-                            reversalCase = ((reversal ==1) && (jTrial >= thresholdReversal(1)) && aboveThreshold) || ((reversal ==2) && (jTrial>=thresholdReversal(2)));
+                            trialTemp = max(iTrial-100, 1);
+                            diffCheck = sum(aboveThreshold(trialTemp:iTrial-1));
+                            reversalCase = ((reversal ==1) && (jTrial >= thresholdReversal(1)) && (diffCheck >=75)) ...
+                                || ((reversal ==2) && (jTrial>=thresholdReversal(2)));
                             if reversalCase
                                 usedProb = probList(cueType);
                                 [maxProb, maxIndex] = max(usedProb);
@@ -127,11 +130,11 @@ try
                                 usedProb(minIndex) = maxProb;
                                 fprintf(handles.arduino, '%s',['p',num2str(usedProb)]);
                                 jTrial = 0;
-                                aboveThreshold = false;
+                                %aboveThreshold = 0;
                                 jReversal = jReversal+1;
                                 thresholdReversal = nan;
                                 set(handles.jReversal,'string',num2str(jReversal))
-                            elseif reversal ==2 || ((reverseal ==1)&& jReversal ==0) 
+                            elseif reversal ==2
                                 jTrial = jTrial+1;
                                 set(handles.jTrial,'string', num2str(thresholdReversal(1)-jTrial))
                             end
@@ -187,12 +190,12 @@ try
                         
                         
                         % Plot lick number histogram
-                        if iTrial<100
+                        if iTrial<20
                             lickNum = handles.data.lickNum(1:iTrial);
                             cueData = handles.data.cue(1:iTrial);
                         else
-                            lickNum = handles.data.lickNum(iTrial-99:iTrial);
-                            cueData = handles.data.cue(iTrial-99:iTrial);
+                            lickNum = handles.data.lickNum(iTrial-19:iTrial);
+                            cueData = handles.data.cue(iTrial-19:iTrial);
                         end
                         lickMean = zeros(1,4);
                         lickSem = zeros(1,4);
@@ -219,13 +222,12 @@ try
                             [Cmin, Imin] = min(probList(cueType));
                             dtI = mean(lickNum(cueData==cueType(Imax)-1))>mean(lickNum(cueData==cueType(Imin)-1)); %distinguish
                             set(handles.pANOVA,'String',num2str(pttest,'%.3f'));
-                            if pttest <= 0.01 && iTrial>=100 && dtI
+                            if pttest <= 0.05 && iTrial>=20 && dtI
                                 set(handles.pANOVA,'BackgroundColor','y');
-                                aboveThreshold = true;
-
                             else
                                 set(handles.pANOVA,'BackgroundColor','w');
                             end
+                            aboveThreshold = [aboveThreshold httest];
                             set(handles.jTrial,'string', num2str(jTrial))
                         catch
                         end
