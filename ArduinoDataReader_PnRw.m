@@ -6,7 +6,7 @@ handles = guidata(hFigure);
 
 if isempty(state); state = 9; end
 if state==9
-    iTrial=1; jTrial=0; aboveThreshold=false; jReversal=0; nCue = zeros(1,4);...
+    iTrial=1; jTrial=0; aboveThreshold=[]; jReversal=0; nCue = zeros(1,4);...
         cueN = 0; initialIdentity = NaN; secondIdentity = NaN; nOmit = zeros(1,4); reversalTimes = 0;...
         nTrial = 200; thresholdReversal = NaN; identityList = {'1122';'1221';'1212';'2112';'2121';'2211'};...
         modBlockTmp = get(handles.modBlock,'Value');
@@ -133,8 +133,8 @@ try
                         handles.data.reversal(iTrial) = reversal;
                         if reversal ~=0
                             trialTemp = max(iTrial-100, 1);
-                            
-                            reversalCase = ((reversal ==1) && aboveThreshold && (jTrial >= thresholdReversal(1))) ||...
+                            diffCheck = sum(aboveThreshold(trialTemp:iTrial-1));
+                            reversalCase = ((reversal ==1) && (diffCheck >= 75) && (jTrial >= thresholdReversal(1))) ||...
                                 ((reversal ==2) && (jTrial>=threshold_mod2)); 
                             reversalCase = reversalCase * cueN;
                             switch reversalCase
@@ -148,7 +148,7 @@ try
                                     fprintf(handles.arduino, '%s',['o',num2str(identityType)]);
                                     outcomeIdentity = identityList{identityType+1};
                                     jTrial = 0;
-                                    aboveThreshold = false;
+                                    %aboveThreshold = false;
                                     jReversal = jReversal+1;
                                     thresholdReversal = nan;
                                 case 4
@@ -171,11 +171,11 @@ try
                                     end
                                     outcomeIdentity = identityList{identityType+1};
                                     jTrial = 0;
-                                    aboveThreshold = false;
+                                    %aboveThreshold = false;
                                     jReversal = jReversal+1;
                                     thresholdReversal = nan;
                                 case 0
-                                    if ((reversal ==1) && (jReversal == 0)) || (reversal ==2)
+                                    if ((reversal ==1) && (diffCheck >=1)) || (reversal ==2)
                                         jTrial = jTrial+1;
                                     end
                             end
@@ -241,12 +241,12 @@ try
                         
                         
                         % Plot lick number histogram
-                        if iTrial<100
+                        if iTrial<20
                             lickNum = handles.data.lickNum(1:iTrial);
                             cueData = handles.data.cue(1:iTrial);
                         else
-                            lickNum = handles.data.lickNum(iTrial-99:iTrial);
-                            cueData = handles.data.cue(iTrial-99:iTrial);
+                            lickNum = handles.data.lickNum(iTrial-19:iTrial);
+                            cueData = handles.data.cue(iTrial-19:iTrial);
                         end
                         lickMean = zeros(1,4);
                         lickSem = zeros(1,4);
@@ -266,6 +266,7 @@ try
                         set(handles.aBar,'TickDir','out','FontSize',8, ...
                             'XLim',[0.5 4+0.5],'XTick',1:4,'XTickLabel',{'A','B','C','D'}, ...
                             'YLim',[0 yRange],'YTick',[0 yRange]);
+                        anovaTemp = 0;
                                                 
                         try
                             % ANOVA
@@ -283,7 +284,7 @@ try
                             pnCue = find(ismember(gnames,pnCue));
                             
                             set(handles.pANOVA,'String',num2str(pANOVA,'%.3f'));
-                            if pANOVA <= 0.01 && iTrial>=100 && sum(nCue~=0)==cueN
+                            if pANOVA <= 0.05 && iTrial>=20 && sum(nCue~=0)==cueN
                                 set(handles.pANOVA,'BackgroundColor','y');
                                 
                                 target1 = ismember(c(:,1),rwCue)&ismember(c(:,2),pnCue);
@@ -291,7 +292,7 @@ try
                                 sig1 = c(target1,6)<0.05 & c(target1,4)>0;
                                 sig2 = c(target2,6)<0.05 & c(target2,4)<0;
                                 if sum(sig1)+sum(sig2) == sum(target1|target2) && sum(sig1)+sum(sig2)>0
-                                    aboveThreshold = true;
+                                    anovaTemp = 1;
                                 end
                                 
                             else
@@ -305,6 +306,7 @@ try
                             end
                         catch
                         end
+                        aboveThreshold = [aboveThreshold anovaTemp];
                         hold(handles.aBar,'off');
                         
                     case 'l'
