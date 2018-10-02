@@ -134,10 +134,9 @@ try
                                 jReversal = jReversal+1;
                                 thresholdReversal = nan;
                                 set(handles.jReversal,'string',num2str(jReversal))
-                            elseif reversal ==2
-                                jTrial = jTrial+1;
-                                set(handles.jTrial,'string', num2str(thresholdReversal(1)-jTrial))
                             end
+                            jTrial = jTrial+1;
+                            set(handles.jTrial,'string', num2str(thresholdReversal(1)-jTrial))
                         end
                         
                     case 'd' % state 1: delay
@@ -227,7 +226,7 @@ try
                             else
                                 set(handles.pANOVA,'BackgroundColor','w');
                             end
-                            aboveThreshold = [aboveThreshold httest];
+                            aboveThreshold = [aboveThreshold httest.*dtI];
                             set(handles.jTrial,'string', num2str(jTrial))
                         catch
                         end
