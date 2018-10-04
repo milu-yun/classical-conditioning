@@ -6,7 +6,7 @@ handles = guidata(hFigure);
 
 if isempty(state); state = 9; end
 if state==9
-    iTrial=1; jTrial=0; aboveThreshold=[]; jReversal=0; nCue = zeros(1,4);...
+    iTrial=1; jTrial=0; aboveThreshold=[0]; jReversal=0; nCue = zeros(1,4);...
         cueN = 0; initialIdentity = NaN; secondIdentity = NaN; nOmit = zeros(1,4); reversalTimes = 0;...
         nTrial = 200; thresholdReversal = NaN; identityList = {'1122';'1221';'1212';'2112';'2121';'2211'};...
         modBlockTmp = get(handles.modBlock,'Value');
@@ -127,14 +127,15 @@ try
                     case 'v'
                         reversal = eventData;
                         if isnan(thresholdReversal)
-                            threshold1=randi([140 160],1); threshold2 = round(nTrial./(1+reversalTimes));
+                            threshold1=randi([130 150],1); threshold2 = round(nTrial./(1+reversalTimes));
                             thresholdReversal = [threshold1 threshold2];
                         end
                         handles.data.reversal(iTrial) = reversal;
                         if reversal ~=0
-                            trialTemp = max(iTrial-100, 1);
+                            trialTemp = max(iTrial-99, 2);
                             diffCheck = sum(aboveThreshold(trialTemp:iTrial-1));
-                            reversalCase = ((reversal ==1) && (diffCheck >= 75) && (jTrial >= thresholdReversal(1))) ||...
+                            if diffCheck>=75; aboveThreshold(1) = 1; end
+                            reversalCase = ((reversal ==1) && (aboveThreshold(1)) && (jTrial >= thresholdReversal(1))) ||...
                                 ((reversal ==2) && (jTrial>=threshold_mod2)); 
                             reversalCase = reversalCase * cueN;
                             switch reversalCase
@@ -148,7 +149,7 @@ try
                                     fprintf(handles.arduino, '%s',['o',num2str(identityType)]);
                                     outcomeIdentity = identityList{identityType+1};
                                     jTrial = 0;
-                                    %aboveThreshold = false;
+                                    aboveThreshold(1) = 0;
                                     jReversal = jReversal+1;
                                     thresholdReversal = nan;
                                 case 4
@@ -171,7 +172,7 @@ try
                                     end
                                     outcomeIdentity = identityList{identityType+1};
                                     jTrial = 0;
-                                    %aboveThreshold = false;
+                                    aboveThreshold(1) = 0;
                                     jReversal = jReversal+1;
                                     thresholdReversal = nan;
                                 case 0
