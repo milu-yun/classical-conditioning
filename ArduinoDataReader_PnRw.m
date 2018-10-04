@@ -132,7 +132,7 @@ try
                         end
                         handles.data.reversal(iTrial) = reversal;
                         if reversal ~=0
-                            trialTemp = max(iTrial-99, 2);
+                            trialTemp = max(iTrial-100, 2);
                             diffCheck = sum(aboveThreshold(trialTemp:iTrial-1));
                             if diffCheck>=75; aboveThreshold(1) = 1; end
                             reversalCase = ((reversal ==1) && (aboveThreshold(1)) && (jTrial >= thresholdReversal(1))) ||...
