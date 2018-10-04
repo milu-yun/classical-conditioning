@@ -115,10 +115,10 @@ try
                         %threshold_mod2 = round(nTrial./(1+reversalTimes));
                         if reversal ~=0
                             if isnan(thresholdReversal)
-                                threshold1=randi([120 140],1); threshold2 = round(nTrial./(1+reversalTimes));
+                                threshold1=randi([130 150],1); threshold2 = round(nTrial./(1+reversalTimes));
                                 thresholdReversal = [threshold1 threshold2]; 
                             end
-                            trialTemp = max(iTrial-100, 1);
+                            trialTemp = max(iTrial-100, 2);
                             diffCheck = sum(aboveThreshold(trialTemp:iTrial-1));
                             if diffCheck >=75; aboveThreshold(1) = 1; end
                             reversalCase = ((reversal ==1) && (jTrial >= thresholdReversal(1)) && (aboveThreshold(1)) ...
