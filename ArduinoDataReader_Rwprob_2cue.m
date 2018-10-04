@@ -6,8 +6,8 @@ handles = guidata(hFigure);
 
 if isempty(state); state = 9; end
 if state==9
-    iTrial=1; jTrial=0; aboveThreshold=[]; jReversal=0; nCue = zeros(1,4);probList = zeros(1,4);
-    cueN = 2; initialIdentity = NaN; cueType = zeros(1,4); nOmit = zeros(1,4);thresholdReversal = NaN;
+    iTrial=1; jTrial=0; aboveThreshold=[0]; jReversal=0; nCue = zeros(1,4);probList = zeros(1,4);
+    cueN = 2; initialIdentity = NaN; cueType = zeros(1,4); nOmit = zeros(1,4); thresholdReversal = NaN;
     reversalTimes = 0; nTrial = 200;
 end
 
@@ -115,12 +115,13 @@ try
                         %threshold_mod2 = round(nTrial./(1+reversalTimes));
                         if reversal ~=0
                             if isnan(thresholdReversal)
-                                threshold1=randi([140 160],1); threshold2 = round(nTrial./(1+reversalTimes));
+                                threshold1=randi([120 140],1); threshold2 = round(nTrial./(1+reversalTimes));
                                 thresholdReversal = [threshold1 threshold2]; 
                             end
                             trialTemp = max(iTrial-100, 1);
                             diffCheck = sum(aboveThreshold(trialTemp:iTrial-1));
-                            reversalCase = ((reversal ==1) && (jTrial >= thresholdReversal(1)) && (diffCheck >=75)) ...
+                            if diffCheck >=75; aboveThreshold(1) = 1; end
+                            reversalCase = ((reversal ==1) && (jTrial >= thresholdReversal(1)) && (aboveThreshold(1)) ...
                                 || ((reversal ==2) && (jTrial>=thresholdReversal(2)));
                             if reversalCase
                                 usedProb = probList(cueType);
@@ -130,7 +131,7 @@ try
                                 usedProb(minIndex) = maxProb;
                                 fprintf(handles.arduino, '%s',['p',num2str(usedProb)]);
                                 jTrial = 0;
-                                %aboveThreshold = 0;
+                                aboveThreshold(1) = 0;
                                 jReversal = jReversal+1;
                                 thresholdReversal = nan;
                                 set(handles.jReversal,'string',num2str(jReversal))
