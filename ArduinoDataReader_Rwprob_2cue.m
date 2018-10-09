@@ -131,7 +131,7 @@ try
                                 usedProb(minIndex) = maxProb;
                                 fprintf(handles.arduino, '%s',['p',num2str(usedProb)]);
                                 jTrial = 0;
-                                aboveThreshold(1) = 0;
+                                aboveThreshold(1:iTrial-1) = 0;
                                 jReversal = jReversal+1;
                                 thresholdReversal = nan;
                                 set(handles.jReversal,'string',num2str(jReversal))
