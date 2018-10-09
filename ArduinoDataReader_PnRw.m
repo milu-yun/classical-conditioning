@@ -149,7 +149,7 @@ try
                                     fprintf(handles.arduino, '%s',['o',num2str(identityType)]);
                                     outcomeIdentity = identityList{identityType+1};
                                     jTrial = 0;
-                                    aboveThreshold(1) = 0;
+                                    aboveThreshold(1:iTrial-1) = 0;
                                     jReversal = jReversal+1;
                                     thresholdReversal = nan;
                                 case 4
@@ -172,11 +172,11 @@ try
                                     end
                                     outcomeIdentity = identityList{identityType+1};
                                     jTrial = 0;
-                                    aboveThreshold(1) = 0;
+                                    aboveThreshold(1:iTrial-1) = 0;
                                     jReversal = jReversal+1;
                                     thresholdReversal = nan;
                                 case 0
-                                    if ((reversal ==1) && (diffCheck >=1)) || (reversal ==2)
+                                    if (reversal ==1) || (reversal ==2)
                                         jTrial = jTrial+1;
                                     end
                             end
