@@ -156,7 +156,6 @@ fprintf(handles.arduino, '%s', ['p', rewardProb]);
 pause(0.25);
 fprintf(handles.arduino, '%s', ['d', num2str(delayDuration)]);
 pause(0.25);
-fprintf(handles.arduino, '%s', ['s', 0]);
 
 set(handles.mouseName, 'Enable', 'off');
 set(handles.nTrial, 'Enable', 'off');
@@ -178,6 +177,7 @@ handles.fileName = [fileDir get(handles.mouseName,'String'), '_', num2str(clock,
 pause(2);
 tic;
 start(handles.timer);
+fprintf(handles.arduino, '%s', ['s', 0]);
 
 guidata(hObject,handles);
 
