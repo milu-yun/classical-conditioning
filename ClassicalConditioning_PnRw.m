@@ -178,7 +178,6 @@ handles.data.reward = zeros(nTrial, 1);
 handles.data.lickNum = zeros(nTrial, 1);
 handles.data.lickTime = [];
 handles.data.outcomeContingency = zeros(nTrial, 4);
-pause(0.2);
 
 % Start reading serialf
 fprintf(handles.arduino, '%s', ['t', num2str(nTrial)],'sync');
@@ -197,7 +196,7 @@ fprintf(handles.arduino, '%s', ['d', num2str(delayDurationTmp)],'sync');
 pause(0.2);
 fprintf(handles.arduino, '%s', ['o', num2str(outcomeIdentity-1)],'sync');
 pause(0.2);
-fprintf(handles.arduino, '%s', ['s', num2str(modType-1)],'sync');
+
 
 set(handles.mouseName, 'Enable', 'off');
 set(handles.nTrial, 'Enable', 'off');
@@ -225,6 +224,8 @@ handles.fileName = [fileDir get(handles.mouseName,'String'), '_', num2str(clock,
 pause(2);
 tic;
 start(handles.timer);
+
+fprintf(handles.arduino, '%s', ['s', num2str(modType-1)],'sync');
 
 guidata(hObject,handles);
 
