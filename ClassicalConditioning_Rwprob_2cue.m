@@ -183,7 +183,6 @@ fprintf(handles.arduino, '%s', ['p', num2str(rewardProb)],'sync');
 pause(0.2);
 fprintf(handles.arduino, '%s', ['d', num2str(delayDuration)],'sync');
 pause(0.2);
-fprintf(handles.arduino, '%s', ['s', num2str(modType-1)],'sync');
 
 set(handles.mouseName, 'Enable', 'off');
 set(handles.nTrial, 'Enable', 'off');
@@ -210,6 +209,8 @@ handles.fileName = [fileDir get(handles.mouseName,'String'), '_', num2str(clock,
 pause(2);
 tic;
 start(handles.timer);
+
+fprintf(handles.arduino, '%s', ['s', num2str(modType-1)],'sync');
 
 guidata(hObject,handles);
 
