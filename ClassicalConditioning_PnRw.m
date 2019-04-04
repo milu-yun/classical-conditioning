@@ -112,17 +112,22 @@ nTrial = str2double(nTrialTemp{get(handles.nTrial,'Value')});
 rewardAmountTemp = cellstr(get(handles.rewardAmount,'String'));
 rewardAmount = str2double(rewardAmountTemp{get(handles.rewardAmount, 'Value')});
 
+PnDurationTemp = cellstr(get(handles.airpuffDu,'String'));
+PnDuration = str2double(PnDurationTemp{get(handles.airpuffDu, 'Value')});
+
 delayDurationTmp = get(handles.delayDuration,'Value');
 if delayDurationTmp==4
     delayDuration = 2;
 else
     delayDuration = delayDurationTmp;
 end
+
 ITI = get(handles.ITI,'Value');
 modType = get(handles.modType, 'Value');
 reversal = get(handles.reversal,'Value');
 outcomeIdentity = get(handles.outcomeIdentity,'Value');
 reversalTimes = get(handles.reversalTimes,'Value');
+
 
 % Reset figure
 cla(handles.aRaster);
@@ -178,6 +183,7 @@ handles.data.reward = zeros(nTrial, 1);
 handles.data.lickNum = zeros(nTrial, 1);
 handles.data.lickTime = [];
 handles.data.outcomeContingency = zeros(nTrial, 4);
+handles.data.setting = [rewardAmount, PnDuration, ITI, rewardProb];
 
 % Start reading serialf
 fprintf(handles.arduino, '%s', ['t', num2str(nTrial)],'sync');
@@ -196,7 +202,8 @@ fprintf(handles.arduino, '%s', ['d', num2str(delayDurationTmp)],'sync');
 pause(0.2);
 fprintf(handles.arduino, '%s', ['o', num2str(outcomeIdentity-1)],'sync');
 pause(0.2);
-
+fprintf(handles.arduino, '%s', ['u', num2str(PnDuration*100)],'sync');
+pause(0.2);
 
 set(handles.mouseName, 'Enable', 'off');
 set(handles.nTrial, 'Enable', 'off');
@@ -217,7 +224,7 @@ set(handles.reversalTimes, 'Enable', 'off');
 set(handles.outcomeIdentity, 'Enable', 'off');
 set(handles.modBlock,'Enable','off');
 
-fileDir = 'D:\Data\Classical_conditioning\';
+fileDir = 'D:\Data\Classical_conditioning\rwpn\';
 handles.fileName = [fileDir get(handles.mouseName,'String'), '_', num2str(clock, '%4d%02d%02d_%02d%02d%02.0f')];
 
 
@@ -446,6 +453,29 @@ function reversalTimes_Callback(hObject, eventdata, handles)
 % --- Executes during object creation, after setting all properties.
 function reversalTimes_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to reversalTimes (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in airPuffDu.
+function airPuffDu_Callback(hObject, eventdata, handles)
+% hObject    handle to airPuffDu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns airPuffDu contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from airPuffDu
+
+
+% --- Executes during object creation, after setting all properties.
+function airPuffDu_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to airPuffDu (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
