@@ -68,8 +68,8 @@ xlabel(handles.aRaster,'Time (s)');
 ylabel(handles.aRaster,'Trial');
 
 %Cam
-handles.cam = webcam;
-preview(handles.cam);
+% handles.cam = webcam;
+% preview(handles.cam);
 
 guidata(hObject, handles);
 
@@ -203,7 +203,7 @@ set(handles.Reversal,'Enable', 'off');
 set(handles.reversalTimes,'Enable', 'off');
 
 
-fileDir = 'D:\Data\Classical_conditioning\';
+fileDir = 'D:\Data\Classical_conditioning\rwprob\';
 handles.fileName = [fileDir get(handles.mouseName,'String'), '_', num2str(clock, '%4d%02d%02d_%02d%02d%02.0f')];
 
 pause(2);
@@ -211,6 +211,7 @@ tic;
 start(handles.timer);
 
 fprintf(handles.arduino, '%s', ['s', num2str(modType-1)],'sync');
+
 
 guidata(hObject,handles);
 
