@@ -142,6 +142,7 @@ handles.data.cue = zeros(nTrial, 1);
 handles.data.reward = zeros(nTrial, 1);
 handles.data.lickNum = zeros(nTrial, 1);
 handles.data.lickTime = [];
+handles.data.event = zeros(nTrial, 6);
 
 % Start reading serial
 fprintf(handles.arduino, '%s', ['t', num2str(nTrial)]);
@@ -156,6 +157,7 @@ fprintf(handles.arduino, '%s', ['p', rewardProb]);
 pause(0.25);
 fprintf(handles.arduino, '%s', ['d', num2str(delayDuration)]);
 pause(0.25);
+
 
 set(handles.mouseName, 'Enable', 'off');
 set(handles.nTrial, 'Enable', 'off');
@@ -177,6 +179,7 @@ handles.fileName = [fileDir get(handles.mouseName,'String'), '_', num2str(clock,
 pause(2);
 tic;
 start(handles.timer);
+
 fprintf(handles.arduino, '%s', ['s', 0]);
 
 guidata(hObject,handles);
@@ -305,12 +308,12 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 function valve5_Callback(hObject, eventdata, handles)
-fwrite(handles.arduino,'w77');
+fwrite(handles.arduino,'w30');
 aReward = str2double(get(handles.aReward,'String'));
 set(handles.aReward,'String',num2str(aReward+5,4));
 
 function valve10_Callback(hObject, eventdata, handles)
-fwrite(handles.arduino,'w116');
+fwrite(handles.arduino,'w70');
 aReward = str2double(get(handles.aReward,'String'));
 set(handles.aReward,'String',num2str(aReward+10,4));
 
@@ -386,118 +389,6 @@ function aBar_ButtonDownFcn(hObject, eventdata, handles)
 
 
 
-function prob1_Callback(hObject, eventdata, handles)
-% hObject    handle to prob1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of prob1 as text
-%        str2double(get(hObject,'String')) returns contents of prob1 as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function prob1_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to prob1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-function prob2_Callback(hObject, eventdata, handles)
-% hObject    handle to prob3 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of prob3 as text
-%        str2double(get(hObject,'String')) returns contents of prob3 as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function prob2_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to prob3 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-function prob3_Callback(hObject, eventdata, handles)
-% hObject    handle to prob3 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of prob3 as text
-%        str2double(get(hObject,'String')) returns contents of prob3 as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function prob3_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to prob3 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-
-
-% --- Executes on selection change in Reversal.
-function Reversal_Callback(hObject, eventdata, handles)
-% hObject    handle to Reversal (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns Reversal contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from Reversal
-
-
-% --- Executes during object creation, after setting all properties.
-function Reversal_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to Reversal (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on selection change in reversalTime.
-function reversalTime_Callback(hObject, eventdata, handles)
-% hObject    handle to reversalTime (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns reversalTime contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from reversalTime
-
-
-% --- Executes during object creation, after setting all properties.
-function reversalTime_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to reversalTime (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
 
 
 % --- If Enable == 'on', executes on mouse press in 5 pixel border.
@@ -530,7 +421,26 @@ function prob1_DeleteFcn(hObject, eventdata, handles)
 % hObject    handle to prob1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+% --- Executes during object creation, after setting all properties.
 
+function prob1_Callback(hObject, eventdata, handles)
+% hObject    handle to prob1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of prob1 as text
+%        str2double(get(hObject,'String')) returns contents of prob1 as a double
+
+function prob1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to prob1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
 
 % --- Executes during object creation, after setting all properties.
 function aRaster_CreateFcn(hObject, eventdata, handles)
