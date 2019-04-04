@@ -1,4 +1,4 @@
-function ArduinoDataReader(hObject,eventdata, hFigure)
+function ArduinoDataReader_Rwprob_2cue(hObject,eventdata, hFigure)
 persistent state iTrial cue jTrial reversal aboveThreshold jReversal outcomeIdentity...
     initialIdentity nCue identityType cueType modBlock probList nOmit cueN reversalTimes nTrial thresholdReversal
 
@@ -115,13 +115,13 @@ try
                         %threshold_mod2 = round(nTrial./(1+reversalTimes));
                         if reversal ~=0
                             if isnan(thresholdReversal)
-                                threshold1=randi([130 150],1); threshold2 = round(nTrial./(1+reversalTimes));
+                                threshold1=randi([110 120],1); threshold2 = round(nTrial./(1+reversalTimes));
                                 thresholdReversal = [threshold1 threshold2]; 
                             end
                             trialTemp = max(iTrial-100, 2);
                             diffCheck = sum(aboveThreshold(trialTemp:iTrial-1));
                             if diffCheck >=75; aboveThreshold(1) = 1; end
-                            reversalCase = ((reversal ==1) && (jTrial >= thresholdReversal(1)) && (aboveThreshold(1)) ...
+                            reversalCase = ((reversal ==1) && (jTrial >= thresholdReversal(1)) && (aboveThreshold(1))) ...
                                 || ((reversal ==2) && (jTrial>=thresholdReversal(2)));
                             if reversalCase
                                 usedProb = probList(cueType);
@@ -137,7 +137,7 @@ try
                                 set(handles.jReversal,'string',num2str(jReversal))
                             end
                             jTrial = jTrial+1;
-                            set(handles.jTrial,'string', num2str(thresholdReversal(1)-jTrial))
+                            set(handles.jTrial,'string', num2str(diffCheck))
                         end
                         
                     case 'd' % state 1: delay

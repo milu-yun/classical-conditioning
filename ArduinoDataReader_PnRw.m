@@ -1,4 +1,4 @@
-function ArduinoDataReader(hObject,eventdata, hFigure)
+function ArduinoDataReader_PnRw(hObject,eventdata, hFigure)
 persistent state iTrial cue jTrial reversal aboveThreshold jReversal outcomeIdentity thresholdReversal...
     initialIdentity secondIdentity nCue identityType modBlock identityList nOmit cueN reversalTimes nTrial
 
@@ -127,7 +127,7 @@ try
                     case 'v'
                         reversal = eventData;
                         if isnan(thresholdReversal)
-                            threshold1=randi([130 150],1); threshold2 = round(nTrial./(1+reversalTimes));
+                            threshold1=randi([130 140],1); threshold2 = round(nTrial./(1+reversalTimes));
                             thresholdReversal = [threshold1 threshold2];
                         end
                         handles.data.reversal(iTrial) = reversal;
@@ -180,6 +180,7 @@ try
                                         jTrial = jTrial+1;
                                     end
                             end
+                            set(handles.jTrial,'string', num2str(diffCheck))
                         end
                         
                     case 'd' % state 1: delay
@@ -336,9 +337,10 @@ try
                         lickNum = handles.data.lickNum(1:nTrial);
                         lickTime = handles.data.lickTime;
                         outcomeContingency = handles.data.outcomeContingency(1:nTrial,:);
+                        setting = handles.data.setting;
                         
                         save(handles.fileName,'nTrial','nReward','stateTime',...
-                            'odorCue','waterReward','lickNum','lickTime','outcomeContingency');
+                            'odorCue','waterReward','lickNum','lickTime','outcomeContingency','setting');
                         
                         set(handles.stopButton, 'Enable', 'off');
                         set(handles.mouseName, 'Enable', 'on');

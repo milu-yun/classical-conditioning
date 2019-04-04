@@ -53,6 +53,7 @@ try
 
                         handles.data.stateTime(iTrial,2) = time;
                         handles.data.cue(iTrial) = eventData;
+                        handles.data.evTime = [handles.data.evTime;1,evtime];
 
                         set(handles.Bar.s0,'Visible','off');
                         set(handles.Bar.s1,'Visible','on');
@@ -97,15 +98,15 @@ try
                         set(handles.Bar.s3,'Visible','on');
                         handles.data.stateTime(iTrial, 4) = time;
                         handles.data.reward(iTrial) = eventData;
-                        handles.data.event(iTrial,:) = evtime;
+                        handles.data.evTime = [handles.data.evTime;3,evtime];
                         
                         if reward == 1
                                 nReward = str2double(get(handles.nReward,'String'));
                                 set(handles.nReward,'String',num2str(nReward+1));
-                                rewardAmountTemp = cellstr(get(handles.rewardAmount,'String'));
-                                rewardAmount = str2double(rewardAmountTemp{get(handles.rewardAmount,'Value')});
-                                aReward = str2double(get(handles.aReward,'String'));
-                                set(handles.aReward,'String',num2str(aReward+rewardAmount,4));
+                                %rewardAmountTemp = cellstr(get(handles.rewardAmount,'String'));
+                                %rewardAmount = str2double(rewardAmountTemp{get(handles.rewardAmount,'Value')});
+                                %aReward = str2double(get(handles.aReward,'String'));
+                                %set(handles.aReward,'String',num2str(aReward+rewardAmount,4));
 %                             if cue == 0
 %                                 nReward0 = str2double(get(handles.reward0,'String'));
 %                                 set(handles.reward0,'String',num2str(nReward0+1));
@@ -127,7 +128,7 @@ try
                             % Plot valve output
                             valveTime = (time - handles.data.stateTime(iTrial,1))/1000000;
                             
-                            plot(handles.aRaster,[valveTime valveTime],[iTrial-1 iTrial],'LineWidth',2,'Color',[0 1 1]);
+                            plot(handles.aRaster,[valveTime valveTime],[iTrial-1 iTrial],'LineWidth',2,'Color',[1 0 0]);
                             
                             % plot(handles.aRaster,[valveTime valveTime],[iTrial-1 iTrial],'LineWidth',2,'Color',[1 0 0]);
                             % end
@@ -198,15 +199,16 @@ try
                         waterReward = handles.data.reward(1:nTrial);
                         lickNum = handles.data.lickNum(1:nTrial);
                         lickTime = handles.data.lickTime;
-                        eventTime = handles.data.event(1:nTrial,:);
+                        eventTime = handles.data.evTime;
+                        setting = handles.data.setting;
 
-                        save(handles.fileName,'nTrial','nReward','stateTime','odorCue','waterReward','lickNum','lickTime','eventTime');
+                        save(handles.fileName,'nTrial','nReward','stateTime','odorCue','waterReward',...
+                            'lickNum','lickTime','eventTime','setting');
                         
                        
                         set(handles.mouseName, 'Enable', 'on');
                         set(handles.nTrial, 'Enable', 'on');
                         set(handles.ITI, 'Enable', 'on');
-                        set(handles.rewardAmount, 'Enable', 'on');
                         set(handles.startButton, 'Enable', 'on');
                         set(handles.stopButton, 'Enable', 'off');
                         set(handles.valve5, 'Enable', 'on');

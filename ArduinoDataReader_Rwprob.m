@@ -1,13 +1,13 @@
-function ArduinoDataReader(hObject,eventdata, hFigure)
+function ArduinoDataReader_Rwprob(hObject,eventdata, hFigure)
 persistent state iTrial cue jTrial reversal aboveThreshold jReversal outcomeIdentity...
-    initialIdentity nCue identityType cueType modBlock probList nOmit cueN reversalTimes nTrial
+    initialIdentity nCue identityType cueType modBlock probList nOmit cueN reversalTimes nTrial thresholdReversal
 
 handles = guidata(hFigure);
 
 if isempty(state); state = 9; end
 if state==9
-    iTrial=1; jTrial=0; aboveThreshold=0; jReversal=0; nCue = zeros(1,4);probList = zeros(1,4);
-    cueN = 3; initialIdentity = NaN; cueType = zeros(1,4); nOmit = zeros(1,4);
+    iTrial=1; jTrial=0; aboveThreshold=[0]; jReversal=0; nCue = zeros(1,4);probList = zeros(1,4);
+    cueN = 2; initialIdentity = NaN; cueType = zeros(1,4); nOmit = zeros(1,4); thresholdReversal = NaN;
     reversalTimes = 0; nTrial = 200;
 end
 
@@ -88,10 +88,12 @@ try
                     case 'n' % Combination of used cues
                         cueChoice = eventData;
                         switch cueChoice
-                            case 30; cueType = [1 2 3];
-                            case 31; cueType = [1 2 4];
-                            case 33; cueType = [1 3 4];
-                            case 35; cueType = [2 3 4];
+                            case 20; cueType = [1 2]; % AB
+                            case 21; cueType = [1 3]; % AC
+                            case 22; cueType = [1 4]; % AD
+                            case 24; cueType = [2 3]; % BC
+                            case 25; cueType = [2 4]; % BD
+                            case 28; cueType = [3 4]; % CD
                         end
                         
                     case 'p'
@@ -99,7 +101,7 @@ try
                         probtemp = num2str(probability);
                         iProb = str2num(probtemp(1));
                         probList(iProb) = str2double(probtemp(2:end));
-                        handles.data.problist(iTrial,:) = probList;         
+                        handles.data.problist(iTrial,:) = probList;
                         
                     case 'f'
                         reversalTimes = eventData;
@@ -108,27 +110,34 @@ try
                         nTrial = eventData;
                         
                     case 'v'
-                        reversal = eventData;  
-                        threshold_mod1 = nTrial/2;
-                        threshold_mod2 = round(nTrial./(1+reversalTimes));
+                        reversal = eventData;
+                        %threshold_mod1 = 100;
+                        %threshold_mod2 = round(nTrial./(1+reversalTimes));
                         if reversal ~=0
-                            reversalCase = ((reversal ==1) && (jReversal==0) && (jTrial >= threshold_mod1)) ||...
-                                ((reversal ==2) && (jTrial>=threshold_mod2));
+                            if isnan(thresholdReversal)
+                                threshold1=randi([130 140],1); threshold2 = round(nTrial./(1+reversalTimes));
+                                thresholdReversal = [threshold1 threshold2]; 
+                            end
+                            trialTemp = max(iTrial-100, 2);
+                            diffCheck = sum(aboveThreshold(trialTemp:iTrial-1));
+                            if diffCheck >=75; aboveThreshold(1) = 1; end
+                            reversalCase = ((reversal ==1) && (jTrial >= thresholdReversal(1)) && (aboveThreshold(1)) ...
+                                || ((reversal ==2) && (jTrial>=thresholdReversal(2)));
                             if reversalCase
                                 usedProb = probList(cueType);
-                                maxProb = max(usedProb);
-                                minProb = min(usedProb);
-                                maxIndex = find(max(usedProb)==usedProb);
-                                minIndex = find(min(usedProb)==usedProb);
+                                [maxProb, maxIndex] = max(usedProb);
+                                [minProb, minIndex] = min(usedProb);
                                 usedProb(maxIndex) = minProb;
                                 usedProb(minIndex) = maxProb;
                                 fprintf(handles.arduino, '%s',['p',num2str(usedProb)]);
                                 jTrial = 0;
-                                aboveThreshold = 0;
+                                aboveThreshold(1:iTrial-1) = 0;
                                 jReversal = jReversal+1;
-                            else
-                                jTrial = jTrial+1;
+                                thresholdReversal = nan;
+                                set(handles.jReversal,'string',num2str(jReversal))
                             end
+                            jTrial = jTrial+1;
+                            set(handles.jTrial,'string', num2str(thresholdReversal(1)-jTrial))
                         end
                         
                     case 'd' % state 1: delay
@@ -146,7 +155,7 @@ try
                         
                         set(handles.bar.s2,'Visible','off');
                         set(handles.bar.s3,'Visible','on');
-
+                        
                         
                         if reward == 1
                             nReward = str2double(get(handles.nReward,'String'));
@@ -173,11 +182,11 @@ try
                         
                         handles.data.stateTime(iTrial, 5) = time;
                         
-%                         if omit==0
-%                             nOmit(cue+1) = nOmit(cue+1) + 1;
-%                             set(handles.(['omit',num2str(cue)]),'String',num2str(nOmit(cue+1)));
-%                             set(handles.(['omit',num2str(cue)]),'BackgroundColor','m');
-%                         end
+                        %                         if omit==0
+                        %                             nOmit(cue+1) = nOmit(cue+1) + 1;
+                        %                             set(handles.(['omit',num2str(cue)]),'String',num2str(nOmit(cue+1)));
+                        %                             set(handles.(['omit',num2str(cue)]),'BackgroundColor','m');
+                        %                         end
                         
                         
                         % Plot lick number histogram
@@ -206,25 +215,25 @@ try
                         set(handles.aBar,'TickDir','out','FontSize',8, ...
                             'XLim',[0.5 4+0.5],'XTick',1:4,'XTickLabel',{'A','B','C','D'}, ...
                             'YLim',[0 yRange],'YTick',[0 yRange]);
+                            anovaTemp = 0;
                         try
-                            % ANOVA
-                            [pANOVA,~,stats] = anova1(lickNum,cueData,'off');
-                            [c, ~, ~, gnames] = multcompare(stats,'display','off');
-                            rwCue = cueType;
-                            outInd = nCue(rwCue)==0;
-                            rwCue(outInd) = [];
-                            
-                            gnames = cellfun(@str2double,gnames)+1;
-                            
-                            
-                            set(handles.pANOVA,'String',num2str(pANOVA,'%.3f'));
-                            if pANOVA <= 0.05 && iTrial>=20 && sum(nCue~=0)==cueN
+                            % ttest
+                            [httest,pttest] = ttest2(lickNum(cueData==(cueType(1)-1)),lickNum(cueData==cueType(2)-1));
+                            [Cmax, Imax] = max(probList(cueType));
+                            [Cmin, Imin] = min(probList(cueType));
+                            dtI = mean(lickNum(cueData==cueType(Imax)-1))>mean(lickNum(cueData==cueType(Imin)-1)); %distinguish
+                            set(handles.pANOVA,'String',num2str(pttest,'%.3f'));
+                            if pttest <= 0.05 && iTrial>=20 && dtI
                                 set(handles.pANOVA,'BackgroundColor','y');
+                                anovaTemp = 1;
                             else
                                 set(handles.pANOVA,'BackgroundColor','w');
                             end
+                            
+                            set(handles.jTrial,'string', num2str(jTrial))
                         catch
                         end
+                        aboveThreshold = [aboveThreshold anovaTemp];
                         hold(handles.aBar,'off');
                         
                     case 'l'
@@ -272,7 +281,6 @@ try
                         set(handles.delayDuration, 'Enable', 'on');
                         set(handles.prob1, 'Enable', 'on');
                         set(handles.prob2, 'Enable', 'on');
-                        set(handles.prob3, 'Enable', 'on');
                         set(handles.modType, 'Enable', 'on');
                         set(handles.Reversal, 'Enable', 'on');
                         set(handles.reversalTimes, 'Enable', 'on');
