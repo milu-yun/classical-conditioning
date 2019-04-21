@@ -27,7 +27,7 @@ handles.output = hObject;
 handles.timer = timer(...
     'ExecutionMode', 'fixedSpacing', ...
     'BusyMode', 'drop', ...
-    'Period', 0.1, ...
+    'Period', 0.01, ...
     'TimerFcn', {@ArduinoDataReader_eye,hObject});
 
 % Set serial
@@ -164,7 +164,7 @@ fprintf(handles.arduino, '%s', ['p', rewardProb]);
 pause(0.25);
 fprintf(handles.arduino, '%s', ['d', num2str(delayDuration)]);
 pause(0.25);
-fprintf(handles.arduino, '%s', ['u', num2str(PnDuration*100)],'sync');
+fprintf(handles.arduino, '%s', ['u', num2str(PnDuration)],'sync');
 pause(0.2);
 
 
