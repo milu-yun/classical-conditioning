@@ -19,6 +19,7 @@ end
 
 try
     while handles.arduino.BytesAvailable > 0
+        evtime = clock;
         str = fscanf(handles.arduino,'%s');
         set(handles.eventText,'String',str);
         str = strsplit(str);
@@ -88,6 +89,7 @@ try
                         
                         handles.data.stateTime(iTrial,2) = time;
                         handles.data.cue(iTrial) = eventData;
+                        handles.data.evTime = [handles.data.evTime;1,evtime];
                         
                         set(handles.bar.s0,'Visible','off');
                         set(handles.bar.s1,'Visible','on');
@@ -198,6 +200,7 @@ try
                         set(handles.bar.s3,'Visible','on');
                         handles.data.stateTime(iTrial, 4) = time;
                         handles.data.reward(iTrial) = eventData;
+                        handles.data.evTime = [handles.data.evTime;3,evtime];
                         
                         if reward == 1
                             if strcmp(outcomeIdentity(cue+1),'1')
@@ -338,9 +341,10 @@ try
                         lickTime = handles.data.lickTime;
                         outcomeContingency = handles.data.outcomeContingency(1:nTrial,:);
                         setting = handles.data.setting;
+                        eventTime = handles.data.evTime;
                         
-                        save(handles.fileName,'nTrial','nReward','stateTime',...
-                            'odorCue','waterReward','lickNum','lickTime','outcomeContingency','setting');
+                        save(handles.fileName,'nTrial','nReward','stateTime','odorCue',...
+                            'waterReward','lickNum','lickTime','outcomeContingency','eventTime','setting');
                         
                         set(handles.stopButton, 'Enable', 'off');
                         set(handles.mouseName, 'Enable', 'on');
