@@ -28,7 +28,7 @@ handles.output = hObject;
 handles.timer = timer(...
     'ExecutionMode', 'fixedSpacing', ...
     'BusyMode', 'drop', ...
-    'Period', 0.1, ...
+    'Period', 0.01, ...
     'TimerFcn', {@ArduinoDataReader_PnRw,hObject});
 
 % Set serial
@@ -202,7 +202,7 @@ fprintf(handles.arduino, '%s', ['d', num2str(delayDurationTmp)],'sync');
 pause(0.2);
 fprintf(handles.arduino, '%s', ['o', num2str(outcomeIdentity-1)],'sync');
 pause(0.2);
-fprintf(handles.arduino, '%s', ['u', num2str(PnDuration*100)],'sync');
+fprintf(handles.arduino, '%s', ['u', num2str(PnDuration)],'sync');
 pause(0.2);
 
 set(handles.mouseName, 'Enable', 'off');
